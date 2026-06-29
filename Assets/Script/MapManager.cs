@@ -7,6 +7,7 @@ public class CellData
     public Vector2Int pos;
     public bool isFilled;
     public Color color;
+    public Transform block;
 }
 
 public class MapManager : MonoBehaviour
@@ -77,6 +78,77 @@ public class MapManager : MonoBehaviour
     public bool IsOccupied(int x, int y)
     {
         return grid[x, y].isFilled;
+    }
+
+    // マップ上のミノが揃ったかを確認
+    public void CheckLine()
+    {
+        // 全捜索
+        for(int y = 0; y < height; y++)
+        {
+            bool isFull = true; // 初手に行が埋まっていると仮定
+
+            for(int x = 0; x < width; x++)
+            {
+                if(!grid[x, y].isFilled)    // もし埋まっていなかったら処理しない
+                {
+                    isFull = false;
+                    break;
+                }
+            }
+
+            if(isFull)
+            {
+                DeleteLine(y);
+                DropLines(y);
+            }
+        }
+    }
+
+    // 行を空にする
+    private void DeleteLine(int y)
+    {
+        // 行を順番に削除
+        for(int x = 0; x < width; x++)
+        {
+            CellData cell = grid[x, y];
+
+            // 対象の[grid]があれば[null]にしてオブジェクトを破壊
+            if(cell.block != null)
+            {
+                Destroy(cell.block.gameObject);
+                cell.block = null;
+            }
+
+            // データ上でも空にしておく
+            grid[x, y].isFilled = false;
+        }
+    }
+
+    // 既存の行を一段下げる
+    private void DropLines(int deletedY)
+    {
+        for(int currentY = deletedY; currentY < height - 1; currentY++)
+        {
+            for(int x = 0; x < width; x++)
+            {
+                // 上の情報を１段下へコピー
+                grid[x, currentY].block = grid[x, currentY + 1].block;
+                grid[x, currentY].isFilled = grid[x, currentY + 1].isFilled;
+
+                // ブロックの見た目も落下
+                if(grid[x, currentY].block != null)
+                {
+                    grid[x, currentY].block.position = GetWorldPosition(x, currentY);
+                }
+            }
+        }
+
+        for(int x = 0; x < width; x++)
+        {
+            grid[x, height - 1].block = null;
+            grid[x, height - 1].isFilled = false;
+        }
     }
 }
 

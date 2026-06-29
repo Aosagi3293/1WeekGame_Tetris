@@ -114,7 +114,10 @@ public class TetrominoController : MonoBehaviour
 
             var cell = MapManager.Instance.GetCell(pos.x, pos.y);
             cell.isFilled = true;
+            cell.block = block;
         }
+
+        MapManager.Instance.CheckLine();    // 行のチェック
     }
 
     // 回転処理

@@ -56,21 +56,23 @@ public class TetrominoSpawner : MonoBehaviour
     // ブロックの生成
     public void Spawn()
     {
+        // タイプの決定と形状データの取得
         type = (TetrominoType)Random.Range(0, 7);
         Vector2Int[] shape = TetrominoData.Shapes[type];
 
+        // 空の親オブジェクトを生成し、先に初期位置へ配置
         GameObject parent = new GameObject("Tetromino");
+        parent.transform.position = MapManager.Instance.GetWorldPosition(5, 18);
 
+        // コントローラーの追加とデータのディープコピー
         TetrominoController controller = parent.AddComponent<TetrominoController>();
-
         controller.cells = (Vector2Int[])shape.Clone();
 
+        // 子オブジェクトを生成して配置
         foreach(var pos in shape)
         {
             GameObject block = Instantiate(blockPrefab, parent.transform);
             block.transform.localPosition = new Vector3(pos.x, pos.y, 0);
         }
-
-        parent.transform.position = MapManager.Instance.GetWorldPosition(5, 18);
     }
 }
