@@ -18,6 +18,10 @@ public class MapManager : MonoBehaviour
     [SerializeField] private int height = 20;
     [SerializeField] private float tileSize = 1;
 
+    public int Width => width;
+    public int Height => height;
+    public float TileSize => tileSize;
+
     private CellData[,] grid;
 
     private void Awake()
@@ -83,6 +87,8 @@ public class MapManager : MonoBehaviour
     // マップ上のミノが揃ったかを確認
     public void CheckLine()
     {
+        int lineCount = 0;
+
         // 全捜索
         for(int y = 0; y < height; y++)
         {
@@ -101,7 +107,15 @@ public class MapManager : MonoBehaviour
             {
                 DeleteLine(y);
                 DropLines(y);
+
+                y--;    // 段が下りる為同じ段を確認させる
+                lineCount++;
             }
+        }
+
+        if(lineCount > 0)
+        {
+            ScoreManager.Instance.AddScore(lineCount);
         }
     }
 
