@@ -46,10 +46,13 @@ public class TetrominoSpawner : MonoBehaviour
 {
     public GameObject blockPrefab;
 
+    private float tileSize;
+
     [SerializeField] private TetrominoType type;
 
     private void Start()
     {
+        tileSize = GameSettings.Instance.TileSize;
         Spawn();
     }
 
@@ -72,7 +75,8 @@ public class TetrominoSpawner : MonoBehaviour
         foreach(var pos in shape)
         {
             GameObject block = Instantiate(blockPrefab, parent.transform);
-            block.transform.localPosition = new Vector3(pos.x, pos.y, 0);
+            block.transform.localPosition = new Vector3(pos.x * tileSize, pos.y * tileSize, 0);
+            block.transform.localScale = Vector3.one * tileSize;
         }
     }
 }
