@@ -16,9 +16,11 @@ public class GridManager : MonoBehaviour
 
     private void Start()
     {
-        width = MapManager.Instance.Width;
-        height = MapManager.Instance.Height;
-        tileSize = MapManager.Instance.TileSize;
+        width = GameSettings.Instance.Width;
+        height = GameSettings.Instance.Height;
+        tileSize = GameSettings.Instance.TileSize;
+
+        lineWidth = GameSettings.Instance.lineWidth * tileSize;
 
         CreateVerticalLines();
         CreateHorizontalLines();
@@ -28,12 +30,12 @@ public class GridManager : MonoBehaviour
     private void CreateVerticalLines()
     {
         // 線の始まりと終わりのY座標をはじめに計算しておく
-        float startY = yOffset;
-        float endY = (height * tileSize) + yOffset;
+        float startY = yOffset * tileSize;
+        float endY = (height * tileSize) + (yOffset * tileSize);
 
         for (int i = 0; i < width + 1; i++)
         {
-            float xPos = (i * tileSize) + xOffset;
+            float xPos = (i * tileSize) + (xOffset * tileSize);
             
             Vector3 start = new Vector3(xPos, startY, 0);
             Vector3 end = new Vector3(xPos, endY, 0);
@@ -46,12 +48,12 @@ public class GridManager : MonoBehaviour
     private void CreateHorizontalLines()
     {
         // 線の始まりと終わりのX座標をはじめに計算しておく
-        float startX = xOffset;
-        float endX = (width * tileSize) + xOffset;
+        float startX = xOffset * tileSize;
+        float endX = (width * tileSize) + (xOffset * tileSize);
 
         for (int i = 0; i < height + 1; i++)
         {
-            float yPos = (i * tileSize) + yOffset;
+            float yPos = (i * tileSize) + (yOffset * tileSize);
 
             Vector3 start = new Vector3(startX, yPos, 0);
             Vector3 end = new Vector3(endX, yPos, 0);

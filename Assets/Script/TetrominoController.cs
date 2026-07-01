@@ -13,6 +13,8 @@ public class TetrominoController : MonoBehaviour
 
     public Vector2Int[] cells = new Vector2Int[4];
     
+    private float tileSize;
+    
     Vector2Int[] kickTests =
     {
         new Vector2Int(0, 0),
@@ -21,6 +23,11 @@ public class TetrominoController : MonoBehaviour
         new Vector2Int(2, 0),
         new Vector2Int(-2, 0),
     };
+
+    private void Start()
+    {
+        tileSize = GameSettings.Instance.TileSize;
+    }
 
     private void Update()
     {
@@ -41,7 +48,7 @@ public class TetrominoController : MonoBehaviour
         // 移動可能かチェック
         if(CanMove(dir))
         {
-            transform.position += new Vector3(dir.x, dir.y, 0);
+            transform.position += new Vector3(dir.x * tileSize, dir.y * tileSize, 0);
         }
         else if(dir == Vector2Int.down && move == true)
         {
@@ -86,8 +93,8 @@ public class TetrominoController : MonoBehaviour
         foreach(Transform block in transform)
         {
             Vector2Int pos = new Vector2Int(
-                Mathf.RoundToInt(block.position.x) + dir.x,
-                Mathf.RoundToInt(block.position.y) + dir.y
+                Mathf.RoundToInt(block.position.x / tileSize) + dir.x,
+                Mathf.RoundToInt(block.position.y / tileSize) + dir.y
             );
 
             // 壁チェック
@@ -95,7 +102,7 @@ public class TetrominoController : MonoBehaviour
                 return false;
 
             // 床＆積みブロックチェック
-            if(pos.y >= 0 && MapManager.Instance.IsOccupied(pos.x, pos.y))
+            if(pos.y >= 0 && pos.y < 20 && MapManager.Instance.IsOccupied(pos.x, pos.y))
                 return false;
         }
 
@@ -108,8 +115,8 @@ public class TetrominoController : MonoBehaviour
         foreach(Transform block in transform)
         {
             Vector2Int pos = new Vector2Int(
-                Mathf.RoundToInt(block.position.x),
-                Mathf.RoundToInt(block.position.y)
+                Mathf.RoundToInt(block.position.x / tileSize),
+                Mathf.RoundToInt(block.position.y / tileSize)
             );
 
             var cell = MapManager.Instance.GetCell(pos.x, pos.y);
@@ -157,19 +164,21 @@ public class TetrominoController : MonoBehaviour
         foreach(var cell in testCells)
         {
             int x =
-                Mathf.RoundToInt(transform.position.x)
+                Mathf.RoundToInt(transform.position.x / tileSize)
                 + cell.x
                 + offset.x;
 
             int y =
-                Mathf.RoundToInt(transform.position.y)
+                Mathf.RoundToInt(transform.position.y / tileSize)
                 + cell.y
                 + offset.y;
+
+            if (y < 0) return false;
 
             if(!MapManager.Instance.IsInside(x, y))
                 return false;
 
-            if(MapManager.Instance.IsOccupied(x, y))
+            if(y < 20 && MapManager.Instance.IsOccupied(x, y))
                 return false;
         }
 
@@ -181,7 +190,7 @@ public class TetrominoController : MonoBehaviour
     {
         cells = rotatedCells;
 
-        transform.position += new Vector3(kick.x, kick.y, 0);
+        transform.position += new Vector3(kick.x * tileSize, kick.y * tileSize, 0);
 
         UpdateVisual();
     }
@@ -191,7 +200,7 @@ public class TetrominoController : MonoBehaviour
     {
         for(int i = 0; i < transform.childCount; i++)
         {
-            transform.GetChild(i).localPosition = new Vector2(cells[i].x, cells[i].y);
+            transform.GetChild(i).localPosition = new Vector3(cells[i].x * tileSize, cells[i].y * tileSize, 0);
         }
     }
 
@@ -200,7 +209,7 @@ public class TetrominoController : MonoBehaviour
     {
         while(CanMove(Vector2Int.down))
         {
-            transform.position += Vector3.down;
+            transform.position += Vector3.down * tileSize;
         }
 
         FixToGrid();

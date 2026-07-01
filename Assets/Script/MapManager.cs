@@ -14,15 +14,11 @@ public class MapManager : MonoBehaviour
 {
     public static MapManager Instance {get; private set;}
 
-    [SerializeField] private int width = 10;
-    [SerializeField] private int height = 20;
-    [SerializeField] private float tileSize = 1;
-
-    public int Width => width;
-    public int Height => height;
-    public float TileSize => tileSize;
-
     private CellData[,] grid;
+
+    public int width => GameSettings.Instance.Width;
+    public int height => GameSettings.Instance.Height;
+    public float tileSize => GameSettings.Instance.TileSize;
 
     private void Awake()
     {
